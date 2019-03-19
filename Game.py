@@ -12,7 +12,7 @@ Game File
 """
 
 # Libraries
-import pygame, time
+import pygame
 
 # Settings
 transColor = pygame.Color(255, 0, 255)
@@ -47,15 +47,30 @@ class Player:
 
     def __draw__(self, frame):
         pygame.draw.rect(frame, (255, 0, 0), self.rect)
-"""
+
 # ===== Enemy ===== #
 class Enemy:
-    def __init__(self):
+    def __init__(self, x, y, speed):
+        # Settings
+        self.rect = pygame.Rect(x, y, 64, 64)
+        self.speed = speed
 
     def __update__(self):
+        self.rect.left += self.speed[0]
+        self.rect.top += self.speed[1]
 
-    def __draw__(self):
-"""
+        if self.rect.left < -64:
+            self.rect.left = 760
+        elif self.rect.left > 760:
+            self.rect.left = -64
+        if self.rect.top < -64:
+            self.rect.top = 420
+        elif self.rect.top > 420:
+            self.rect.top = -64
+
+    def __draw__(self, frame):
+        pygame.draw.rect(frame, (255, 255, 0), self.rect)
+
 # ===== Platforms ===== #
 class Platform:
     def __init__(self, x, y, width, height):
@@ -72,23 +87,32 @@ class GameScreen:
         self.frame = frame
         self.player = Player(100, 100)
         self.platforms = [Platform(0, 404, 760, 16)]
+        self.enemies = [Enemy(-64, 0, (3, -1)), Enemy(760, 100, (-5, 1))]
         self.gameFlag = True
 
     def __update__(self):
-        # Gravity for Player
+        # Gravity
         self.player.falling = True
         for platform in self.platforms:
             if self.player.rect.colliderect(platform.rect):
                 self.player.falling = False
                 break
-
         self.player.__update__()
+
+        # Enemies
+        for enemy in self.enemies:
+            enemy.__update__()
+            if self.player.rect.colliderect(enemy.rect):
+                self.player = Player(100, 100)
 
     def __draw__(self):
         self.frame.fill((0, 0, 255))
         self.player.__draw__(self.frame)
         for platform in self.platforms:
             platform.__draw__(self.frame)
+
+        for enemy in self.enemies:
+            enemy.__draw__(self.frame)
 
     # This function manage the keyboard during the Game Screen
     def events(self, event):
