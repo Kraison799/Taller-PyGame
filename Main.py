@@ -14,6 +14,7 @@ Main File
 # Libraries
 import pygame
 from Game import *
+from Menu import *
 
 # Settings
 displayWidth = 760
@@ -32,16 +33,27 @@ def main():
     clock = pygame.time.Clock()
 
     gameScreen = GameScreen(frame)
+    menuScreen = MenuScreen(frame, gameScreen)
 
     while displayFlag:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 displayFlag = False
 
-            gameScreen.events(event)
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_m and gameScreen.flag:
+                    gameScreen.flag = False
+                    menuScreen.flag = True
 
-        gameScreen.__update__()
-        gameScreen.__draw__()
+            if gameScreen.flag:
+                gameScreen.events(event)
+
+        if menuScreen.flag:
+            menuScreen.__update__()
+            menuScreen.__draw__()
+        elif gameScreen.flag:
+            gameScreen.__update__()
+            gameScreen.__draw__()
 
         pygame.display.flip()
         clock.tick(FPS)

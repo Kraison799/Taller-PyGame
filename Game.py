@@ -88,7 +88,7 @@ class GameScreen:
         self.player = Player(100, 100)
         self.platforms = [Platform(0, 404, 760, 16)]
         self.enemies = [Enemy(-64, 0, (3, -1)), Enemy(760, 100, (-5, 1))]
-        self.gameFlag = True
+        self.flag = False
 
     def __update__(self):
         # Gravity
